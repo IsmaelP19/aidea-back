@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: postgres:15.3
+    volumes:
+      - ./aidea_postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=AideaData
+    ports:
+      - "5434:5432"
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    command: /bin/sh -c "sleep 20 && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+
+volumes:
+  aidea_postgres_data:
+    external: true

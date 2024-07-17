@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-tp#vgll=f%+!c$yl#jir5_vxxj1voh-y#1g$mh)0)niev*6t66
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+]
 
 
 # Application definition
@@ -77,8 +80,12 @@ WSGI_APPLICATION = 'aidea_back.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'AideaData',
+        'USER': 'postgres',
+        'PASSWORD': 'docker',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 

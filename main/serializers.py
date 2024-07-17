@@ -6,7 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'password',
-                  'first_name', 'last_name', 'age', 'phone', 'occupation', 'is_staff']
+                  'first_name', 'last_name', 'age', 'phone', 'occupation', 'is_superuser']
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
         }
@@ -18,7 +18,10 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(**validated_data)
+        if validated_data.get('is_superuser'):
+            user = CustomUser.objects.create_superuser(**validated_data)
+        else:
+            user = CustomUser.objects.create_user(**validated_data)
         return user
 
     def update(self, instance, validated_data):

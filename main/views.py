@@ -16,7 +16,13 @@ class IsUserOrReadOnly(permissions.BasePermission):
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.AllowAny()]
+
+        else:
+            return [permissions.IsAuthenticated()]
 
 
 class UserInfoView(generics.RetrieveUpdateDestroyAPIView):

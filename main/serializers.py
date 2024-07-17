@@ -6,33 +6,26 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'password',
-                  'first_name', 'last_name', 'age', 'phone']
+                  'first_name', 'last_name', 'age', 'phone', 'occupation', 'is_staff']
         extra_kwargs = {
-            'password': {'write_only': True, 'required': False}
+            'password': {'write_only': True, 'required': False},
         }
 
+    def validate(self, data):
+        if not self.instance and 'password' not in data:
+            raise serializers.ValidationError(
+                {'password': 'This field may not be blank.'})
+        return data
+
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
-            age=validated_data.get('age', ''),
-            phone=validated_data.get('phone', '')
-        )
+        user = CustomUser.objects.create_user(**validated_data)
         return user
 
     def update(self, instance, validated_data):
-        # Actualiza los campos que se pueden cambiar
-        instance.email = validated_data.get('email', instance.email)
-        instance.first_name = validated_data.get(
-            'first_name', instance.first_name)
-        instance.last_name = validated_data.get(
-            'last_name', instance.last_name)
-        instance.age = validated_data.get('age', instance.age)
-        instance.phone = validated_data.get('phone', instance.phone)
-        if 'password' in validated_data:
-            instance.set_password(validated_data['password'])
+        password = validated_data.pop('password', None)
+        if password is not None:
+            instance.set_password(password)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
         return instance
